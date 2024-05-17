@@ -117,6 +117,9 @@ def extract_all_files(image: BinaryIO, output_dir: str):
         if byte & (1 << bit) != 0
     ]
 
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+
     for inode_index in track(inode_indices, "[blue][-] Extracting files...[/blue]"):
         image.seek(BLOCK_SIZE * 2 + DISK_INODE_SIZE * inode_index)
         inode_data = image.read(DISK_INODE_SIZE)
@@ -135,8 +138,7 @@ def extract_all_files(image: BinaryIO, output_dir: str):
             continue
 
         file_data = extract_inode_data(image, inode)
-        file_path = os.path.join(output_dir, f"file{inode_index}")
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        file_path = os.path.join(output_dir, f"inode{inode_index}")
 
         with open(file_path, "wb") as file:
             file.write(file_data)
