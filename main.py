@@ -35,13 +35,6 @@ class Inode:
         self.indirect3 = indirect3
 
 
-def reverse_bits(byte: int) -> int:
-    byte = (byte & 0xAA) >> 1 | (byte & 0x55) << 1
-    byte = (byte & 0xCC) >> 2 | (byte & 0x33) << 2
-    byte = (byte & 0xF0) >> 4 | (byte & 0x0F) << 4
-    return byte
-
-
 def read_indirect_block(
     image: BinaryIO, indirect_block_index: int, level: int
 ) -> bytes:
@@ -116,7 +109,7 @@ def extract_directory(image: BinaryIO, inode_index: int, output_path: str):
 def extract_all_files(image: BinaryIO, output_dir: str):
     image.seek(BLOCK_SIZE)
     inode_bitmap_data = image.read(BLOCK_SIZE)
-    inode_bitmap = [reverse_bits(byte) for byte in inode_bitmap_data]
+    inode_bitmap = [byte for byte in inode_bitmap_data]
     inode_indices = [
         index * 8 + bit
         for index, byte in enumerate(inode_bitmap)
